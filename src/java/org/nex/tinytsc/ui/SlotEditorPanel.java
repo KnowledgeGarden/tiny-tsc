@@ -78,7 +78,7 @@ public class SlotEditorPanel extends JPanel {
   /**
    * Different behaviors between
    * slots for <code>Concept</code>s and
-   * slots for <code>Rule</code>s and <code>Model</code>s
+   * slots for <code>ProcessRule</code>s and <code>Model</code>s
    */
   public void setIsQP() {
   	newButton.setToolTipText(newTipRule);

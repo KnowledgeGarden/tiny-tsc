@@ -22,7 +22,7 @@ import org.nex.tinytsc.LinkManager;
 import org.nex.tinytsc.api.IConstants;
 import org.nex.tinytsc.api.Identifiable;
 import org.nex.tinytsc.engine.Concept;
-import org.nex.tinytsc.engine.Rule;
+import org.nex.tinytsc.engine.ProcessRule;
 import org.nex.tinytsc.engine.Task;
 
 /**
@@ -102,7 +102,7 @@ public class TreePanel extends JPanel {
     newInstanceOfItem.addActionListener(new TreePanel_newInstanceOfItem_actionAdapter(this));
     xmlItem.setText("XML View");
     xmlItem.addActionListener(new TreePanel_xmlItem_actionAdapter(this));
-    newRuleItem.setText("New Rule...");
+    newRuleItem.setText("New ProcessRule...");
     newRuleItem.addActionListener(new TreePanel_newRuleItem_actionAdapter(this));
     newModelItem.setText("New Model...");
     newModelItem.addActionListener(new TreePanel_newModelItem_actionAdapter(this));
@@ -287,7 +287,7 @@ public class TreePanel extends JPanel {
    * We are deliberately <em>not</em> expanding on
    * <li><code>Episode</code></li>
    * <li><code>Model</code></li>
-   * <li><code>Rule</code></li>
+   * <li><code>ProcessRule</code></li>
    * <li><code>Task</code></li>
    * We do present <code>Model</code>s
    * We presume that the Concept passed here is represented
@@ -301,7 +301,7 @@ public class TreePanel extends JPanel {
     ConceptTreeNode child, prop, prop2, child2;
     Identifiable kid, kid2;
     Model mKid, mConcept;
-    Rule rKid, rConcept = null;
+    ProcessRule rKid, rConcept = null;
     Task tKid, tConcept = null;
     Concept cConcept = null;
     int type = c.getNodeType();
@@ -312,8 +312,8 @@ public class TreePanel extends JPanel {
       case IConstants.MODEL:
         mConcept = (Model) c;
         break;
-      case IConstants.RULE:
-        rConcept = (Rule) c;
+      case IConstants.PROCESS_RULE:
+        rConcept = (ProcessRule) c;
         break;
       case IConstants.TASK:
         tConcept = (Task) c;
@@ -338,7 +338,7 @@ public class TreePanel extends JPanel {
         for (int i = 0; i < len; i++) {
           n = (String) v.get(i);
           kid = environment.getConcept(n);
-          //if that returns null, look for Task, Rule, etc
+          //if that returns null, look for Task, ProcessRule, etc
           if (kid != null) { // if kid 1
             // else it's a leaf node
             child = createNode(kid.getId(), IConstants.CONCEPT);
@@ -403,7 +403,7 @@ public class TreePanel extends JPanel {
           // for each child that is an instance -- which don't expand
           n = (String) v.get(i);
           kid = environment.getConcept(n);
-          //if that returns null, look for Task, Rule, etc
+          //if that returns null, look for Task, ProcessRule, etc
           if (kid != null) {
             System.out.println("  Got Concept " + n);
             // else it's a leaf node
@@ -436,10 +436,10 @@ public class TreePanel extends JPanel {
     }
     else {
       kid = environment.getRule(n);
-      System.out.println("  Got Rule " + n);
+      System.out.println("  Got ProcessRule " + n);
       // rules don't expand
       if (kid != null) {
-        child = createNode(n,IConstants.RULE);
+        child = createNode(n,IConstants.PROCESS_RULE);
         prop.add(child);
       }
       else {

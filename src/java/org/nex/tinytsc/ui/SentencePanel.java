@@ -111,7 +111,7 @@ public class SentencePanel extends JPanel {
   }
 
   void newButton_actionPerformed(ActionEvent e) {
-//  	System.out.println("New Rule Button "+host);
+//  	System.out.println("New ProcessRule Button "+host);
   	host.newSentence(sentenceType);
   }
 

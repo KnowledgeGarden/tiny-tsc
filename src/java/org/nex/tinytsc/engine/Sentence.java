@@ -14,7 +14,7 @@ import java.io.Serializable;
  * @author Jack Park
  * @version 1.0
  *
- * When used in a <code>Rule</code>, a tuple looks like<br>
+ * When used in a <code>ProcessRule</code>, a tuple looks like<br>
  *   subject = *x
  *   predicate = foo
  *   as in foo(*x)
@@ -46,9 +46,9 @@ public class Sentence implements Serializable {
   public String objectB = "";
   /**
    * <p>Truth allows us to, e.g. kill an <code>actor</code> in a
-   * <code>thenActor</code> slot in a <code>Rule</code></p>
+   * <code>thenActor</code> slot in a <code>ProcessRule</code></p>
    * <p>All <code>actors</code>, <code>relations</code>, and <code>states</code>
-   * are assumed to be <code>true</code> until some <code>Rule</code>
+   * are assumed to be <code>true</code> until some <code>ProcessRule</code>
    * makes them <code>false</code>, in which case, they <em>disappear</code>
    * from the <code>Model</code>
    */

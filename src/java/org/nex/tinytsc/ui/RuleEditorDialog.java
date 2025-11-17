@@ -12,7 +12,7 @@ import java.awt.event.*;
 
 import org.nex.tinytsc.engine.Concept;
 import org.nex.tinytsc.engine.Environment;
-import org.nex.tinytsc.engine.Rule;
+import org.nex.tinytsc.engine.ProcessRule;
 import org.nex.tinytsc.DatastoreException;
 
 /**
@@ -60,11 +60,11 @@ public class RuleEditorDialog extends JDialog {
   }
 
   private void jbInit() throws Exception {
-    this.setTitle("Rule Editor");
+    this.setTitle("ProcessRule Editor");
     this.getContentPane().setLayout(borderLayout1);
     this.setSize(800,800);
     jPanel1.setLayout(flowLayout1);
-    jLabel1.setText("Rule Identity: ");
+    jLabel1.setText("ProcessRule Identity: ");
     idField.setPreferredSize(new Dimension(200, 21));
     idField.setText("");
     jPanel2.setLayout(flowLayout2);
@@ -106,7 +106,7 @@ public class RuleEditorDialog extends JDialog {
 
   /**
    * Called from <code>TreeListener</code> to create a new
-   * <code>Rule</code>
+   * <code>ProcessRule</code>
    * Note: <code>Episodes</code> are <em>never</em> created here.
    * @param parentId
    */
@@ -129,7 +129,7 @@ public class RuleEditorDialog extends JDialog {
 //        System.out.println("RED 2");
 	    if (ruleEditorPanel1.getIsDirty()) {
 //	        System.out.println("RED 3");
-	    	Rule ep = ruleEditorPanel1.getRule();
+	    	ProcessRule ep = ruleEditorPanel1.getRule();
 //	        System.out.println("RED 4 "+ep);
 	    	ep.setId(idField.getText());
                 try {
@@ -139,7 +139,7 @@ public class RuleEditorDialog extends JDialog {
                 }
 	    	Concept parent = environment.getConcept(instanceParentId);
 	    	if (parent == null)
-	    		throw new RuntimeException("Rule Missing instanceParent: "+instanceParentId);
+	    		throw new RuntimeException("ProcessRule Missing instanceParent: "+instanceParentId);
 	    	parent.addProperty("hasInstances", idField.getText());
 	    }
     }

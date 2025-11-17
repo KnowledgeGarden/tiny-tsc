@@ -11,7 +11,7 @@ package org.nex.tinytsc.ui;
 import org.nex.tinytsc.engine.Environment;
 import org.nex.tinytsc.api.IConstants;
 import org.nex.tinytsc.engine.Concept;
-//import org.nex.tinytsc.engine.Rule;
+//import org.nex.tinytsc.engine.ProcessRule;
 //import org.nex.tinytsc.engine.Task;
 //import org.nex.tinytsc.engine.Sentence;
 
@@ -98,7 +98,7 @@ public class TreeListener {
   }
   
   public void newRule(String parentConceptId) {
-  	System.out.println("New Rule "+parentConceptId);
+  	System.out.println("New ProcessRule "+parentConceptId);
     if (parentConceptId == null) return;
   	ruleEditor.showNewInstance(parentConceptId);
   }
@@ -116,7 +116,7 @@ public class TreeListener {
   /**
    * Selection could be one of:
    * <li><code>Concept</code></li>
-   * <li><code>Rule</code></li>
+   * <li><code>ProcessRule</code></li>
    * <li><code>Model</code></li>
    * <li><code>Episode</code></li>
    * <li><code>Task</code></li>
@@ -129,7 +129,7 @@ public class TreeListener {
     	case IConstants.CONCEPT: conceptEditor.showSelf(conceptId); break;
     	case IConstants.MODEL: episodeEditor.showSelf(conceptId); break;
     	case IConstants.EPISODE: episodeEditor.showSelf(conceptId); break;
-    	case IConstants.RULE: ruleEditor.showSelf(conceptId); break;
+    	case IConstants.PROCESS_RULE: ruleEditor.showSelf(conceptId); break;
     	case IConstants.TASK: taskEditor.showSelf(conceptId); break;
     }
   }

@@ -100,7 +100,7 @@ public class SentenceEditorPanel extends JPanel {
   }
 
   /**
-   * <p>If this panel is building <code>Rule</code>
+   * <p>If this panel is building <code>ProcessRule</code>
    * <code>Sentence</code>s, then the fields:
    * <code>subject</code>, <code>object</code>, and
    * <code>objectB</code> are hand-entered variables.

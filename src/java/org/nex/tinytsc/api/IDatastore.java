@@ -6,7 +6,7 @@
  */
 package org.nex.tinytsc.api;
 
-import org.nex.tinytsc.engine.Rule;
+import org.nex.tinytsc.engine.ProcessRule;
 import org.nex.tinytsc.engine.Task;
 import org.nex.tinytsc.engine.Episode;
 import org.nex.tinytsc.engine.Model;
@@ -28,13 +28,13 @@ import org.nex.tinytsc.engine.Concept;
 public interface IDatastore {
 
   public void putConcept(String key, Concept w) throws DatastoreException;
-  public void putRule(String key, Rule p) throws DatastoreException;
+  public void putRule(String key, ProcessRule p) throws DatastoreException;
   public void putEpisode(String key, Episode t) throws DatastoreException;
   public void putTask(String key, Task t) throws DatastoreException;
   public void putModel(String key, Model t) throws DatastoreException;
   public Concept getConcept(String key) throws DatastoreException;
 
-  public Rule getRule(String key) throws DatastoreException;
+  public ProcessRule getRule(String key) throws DatastoreException;
   public Episode getEpisode(String key) throws DatastoreException;
   public Task getTask(String key) throws DatastoreException;
   public Model getModel(String key) throws DatastoreException;

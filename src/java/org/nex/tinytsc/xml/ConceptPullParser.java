@@ -12,7 +12,7 @@ import java.util.*;
 import org.nex.tinytsc.engine.Concept;
 import org.nex.tinytsc.engine.Task;
 import org.nex.tinytsc.engine.Episode;
-import org.nex.tinytsc.engine.Rule;
+import org.nex.tinytsc.engine.ProcessRule;
 import org.nex.tinytsc.engine.Model;
 import org.nex.tinytsc.engine.Sentence;
 import org.nex.tinytsc.engine.Environment;
@@ -40,7 +40,7 @@ public class ConceptPullParser {
         private Concept theConcept;
         private Model theModel;
         private Episode theEpisode;
-        private Rule theRule;
+        private ProcessRule theRule;
         private Task theTask;
         private Sentence theSentence;
 
@@ -56,7 +56,7 @@ public class ConceptPullParser {
     public Task getTask() {
     	return theTask;
     }
-    public Rule getRule() {
+    public ProcessRule getRule() {
     	return theRule;
     }
 	/**
@@ -167,8 +167,8 @@ public class ConceptPullParser {
 	                    // make a new Concept
 	                    theConcept = new Concept(id);
 	            } else if (temp.equalsIgnoreCase(IConstants._RULE)) {
-	            	  // make a new Rule
-	                theRule = new Rule(id);
+	            	  // make a new ProcessRule
+	                theRule = new ProcessRule(id);
 	                isRule = true;
 	            } else if (temp.equalsIgnoreCase(IConstants._EPISODE)) {
 	            	  // make a new Episode

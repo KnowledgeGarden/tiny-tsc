@@ -66,7 +66,7 @@ public class ConceptTreeCellRenderer extends DefaultTreeCellRenderer {
  /*     ConceptTreeNode cell = (ConceptTreeNode)value;
       switch (cell.getNodeType()) {
         case IConstants.CONCEPT: setIcon(conceptImage); break;
-        case IConstants.RULE: setIcon(ruleImage); break;
+        case IConstants.PROCESS_RULE: setIcon(ruleImage); break;
         case IConstants.EPISODE: setIcon(episodeImage); break;
         case IConstants.MODEL: setIcon(modelImage); break;
         case IConstants.TASK: setIcon(taskImage); break;

@@ -10,7 +10,7 @@ import java.io.*;
 
 import org.nex.tinytsc.engine.Concept;
 import org.nex.tinytsc.engine.Environment;
-import org.nex.tinytsc.engine.Rule;
+import org.nex.tinytsc.engine.ProcessRule;
 import org.nex.tinytsc.engine.Episode;
 import org.nex.tinytsc.engine.Task;
 import org.nex.tinytsc.xml.ConceptPullParser;
@@ -92,7 +92,7 @@ public class JDBMDatabase /*implements IDatastore*/ {
       throw new DatastoreException(e);
     }
   }
-  public void putRule(String key, Rule p) throws DatastoreException {
+  public void putRule(String key, ProcessRule p) throws DatastoreException {
     try {
         environment.logDebug("PutRule\n"+p.toXML());
       System.out.println("JDBMDatabase.putRule "+key);
@@ -160,11 +160,11 @@ public class JDBMDatabase /*implements IDatastore*/ {
     }
   }
 
-  public Rule getRule(String key) throws DatastoreException {
+  public ProcessRule getRule(String key) throws DatastoreException {
     try {
       System.out.println("JDBMDatabase.getRule "+key);
       browser = ruleTree.browse(key);
-      Rule result = null;
+      ProcessRule result = null;
       String xml;
       while (browser.getNext(tuple)) {
         String k = (String) tuple.getKey();
@@ -392,12 +392,12 @@ public class JDBMDatabase /*implements IDatastore*/ {
       ObjectCache pairCache = new ObjectCache(ruleManager, new MRU(100));
       long ruleRecid = ruleManager.getNamedObject(tableName);
       if (ruleRecid != 0) {
-        System.out.println("Rule exists");
+        System.out.println("ProcessRule exists");
         // already exists
         ruleTree = BTree.load(ruleManager, pairCache, ruleRecid);
       }
       else {
-        System.out.println("Rule not exists");
+        System.out.println("ProcessRule not exists");
         // does not exist
         ruleTree = new BTree(ruleManager, pairCache, new StringComparator());
         ruleManager.setNamedObject(tableName, ruleTree.getRecid());

@@ -14,7 +14,7 @@ import org.nex.tinytsc.engine.Concept;
 import org.nex.tinytsc.engine.Environment;
 import org.nex.tinytsc.engine.Task;
 import org.nex.tinytsc.engine.Episode;
-import org.nex.tinytsc.engine.Rule;
+import org.nex.tinytsc.engine.ProcessRule;
 import org.nex.tinytsc.engine.Sentence;
 import org.nex.tinytsc.engine.SimpleBindingEngine;
 import org.nex.tinytsc.engine.Model;
@@ -36,13 +36,13 @@ import org.nex.tinytsc.engine.InferenceEngine;
  * <li>For each <code>Episode</code> made, FillinNextEpisode</li>
  * <li>until <em>stopping conditions<em> are detected</li></p>
  * <p><em>Stopping conditions</em> exist when:
- * <li>no more <code>Rule</code>s to fire</li>
- * <li><em>stopping</em> <code>Rule</code>s fire</li></p>
+ * <li>no more <code>ProcessRule</code>s to fire</li>
+ * <li><em>stopping</em> <code>ProcessRule</code>s fire</li></p>
  * <p>Note: this can be made faster by building a <code>Lucene</code> index
- * of all <code>Concept</code>s, <code>Rule</code>s, and <code>Episode</code>s
- * in order to speed up finding <code>Rule</code>s to fire.</p>
- * <p>Right now, the algorithm must cycle through every <code>Rule</code>. That
- * won't scale when we have thousands of <code>Rule</code>s.</p>
+ * of all <code>Concept</code>s, <code>ProcessRule</code>s, and <code>Episode</code>s
+ * in order to speed up finding <code>ProcessRule</code>s to fire.</p>
+ * <p>Right now, the algorithm must cycle through every <code>ProcessRule</code>. That
+ * won't scale when we have thousands of <code>ProcessRule</code>s.</p>
  * <p>An alternative way to collect rules, which earlier TSC implementations used,
  * is to bring in the <code>Concept</code> associated with each <code>predicate</code>
  * and collect it's <code>rules</code> list.<br>
@@ -50,11 +50,11 @@ import org.nex.tinytsc.engine.InferenceEngine;
  * aggressively add a ruleId to each predict <code>Concept</code></p>
  * <p> To fire a rule against an Episode, there is a sequence:<br/>
  * <ol> 
- * 	<li> Match Rule actors with Episode actors and bind them; if that fails, 
+ * 	<li> Match ProcessRule actors with Episode actors and bind them; if that fails, 
  * 		that rule is disqualified</li>
- * 	<li> Given a set of bindings, match Rule Relations with Episode relations. Failure
+ * 	<li> Given a set of bindings, match ProcessRule Relations with Episode relations. Failure
  * 		to do so disqualified the rule</li>
- * 	<li> Given a set of bindings, match thee Rule States with Episode states. Failure
+ * 	<li> Given a set of bindings, match thee ProcessRule States with Episode states. Failure
  * 		to do so disqualified the rule</li>
  * 	<li> If you make it here, fire the rule which will create a new Episode</li>
  * </ol></p>
@@ -173,11 +173,11 @@ public class FillinNextEpisodeAgent extends Thread implements IAgent {
     System.out.println("DT 3");
     environment.say("FillinNextEpisode on: "+currentEpId);
     System.out.println("DT 4");
-    List<Rule> rules = collectRules(e);
+    List<ProcessRule> rules = collectRules(e);
     System.out.println("DT 5: "+rules.size());
     int len = rules.size();
     environment.say("FillinNextEpisode got rule count "+len);
-    Rule rul;
+    ProcessRule rul;
     Episode ep;
     environment.say("FillinNextEpisode testing "+len+" rules");
     for (int i=0;i<len;i++) {
@@ -196,7 +196,7 @@ public class FillinNextEpisodeAgent extends Thread implements IAgent {
   }
 
   /**
-   * <code>Episode</code> knows its <code>Rule</code> and its <code>previousEpisode</code>
+   * <code>Episode</code> knows its <code>ProcessRule</code> and its <code>previousEpisode</code>
    * @param e
    */
   void publishTask(Episode e, Model m) {
@@ -209,14 +209,14 @@ public class FillinNextEpisodeAgent extends Thread implements IAgent {
     environment.addTask(newTask);
   }
   /**
-   * <p>See if a <code>Rule</code> <em>can fire</em> on the given <code>Episode</code></p>
-   * <p>If a <code>Rule</code> has already fired on this <code>Episode</code>,
+   * <p>See if a <code>ProcessRule</code> <em>can fire</em> on the given <code>Episode</code></p>
+   * <p>If a <code>ProcessRule</code> has already fired on this <code>Episode</code>,
    * then, don't fire it again.
    * @param e
    * @param r
    * @return
    */
-  boolean testRule(Episode e, Rule r) {
+  boolean testRule(Episode e, ProcessRule r) {
     environment.say("FillinNextEpisode testing rule "+r.getId()+" on episode "+e.getId());
     System.out.println("TR 1: "+e.ruleHasFired(r.getId()));
     // if rule has already fired, just exit false
@@ -234,11 +234,12 @@ public class FillinNextEpisodeAgent extends Thread implements IAgent {
     ///////////////////////////
     // We have a situation:
     // It's possible for a rule to have a sentence for which there is nothing related in the episode
-    // e.g. this shows up when we have an IF-NOT something in a Rule
+    // e.g. this shows up when we have an IF-NOT something in a ProcessRule
     // If the test is an IF, then a missing correspondent is a false
     // If the test is an IF-NOT, then a missing correspondent is a true
     ///////////////////////////
     boolean tru = false;
+    boolean nottru = false;
     /////////////////////
     // THIS is messy:
     //	if the cardinalities of actors in the rule and the episode are not the same
@@ -246,12 +247,18 @@ public class FillinNextEpisodeAgent extends Thread implements IAgent {
     //	right now, the code ignores such edge cases.
     //	NOTE: this only applies to actors because that's where you form bindings
     /////////////////////
+    int len = 0;
+    int len2 = 0;
+    String rulePred, epPred;
+    Integer jjj;
+    ArrayList<Integer> matchedPreds = new ArrayList<Integer>();
+    /////////////////////
+    // Try to Bind ProcessRule variables to Ep facts
+    /////////////////////
     if (rActors.size() == eActors.size()) {
     	// THIS works when actor cardinalities are the same
-      int len = rActors.size(), len2 = eActors.size();
-      String rulePred, epPred;
+      len = rActors.size(); len2 = eActors.size();
       //tru = false;
-      List<Integer> matchedPreds = new ArrayList<Integer>();
       for (int i=0;i<len;i++) {
     	  //for each rule predicate
         rulePred = ((Sentence)rActors.get(i)).predicate;
@@ -264,7 +271,6 @@ public class FillinNextEpisodeAgent extends Thread implements IAgent {
         // BUT, we are doing it inside the constraints that rule and episode
         // cardinality are the same, which they may not be, particularly in the IF-NOT situation
         tru = false;
-        Integer jjj;
         for (int j=0;j<len2;j++) {
         	jjj = new Integer(j);
         	// for each episode predicate except those we already saw
@@ -292,35 +298,73 @@ public class FillinNextEpisodeAgent extends Thread implements IAgent {
     	//		then there's no chance it can fire
     	//	TODO: is there an edge case where you still might bind all the variables?
     }
+    // Now, ifNotActors
+    rActors = r.getIfNotActors();
+    environment.logDebug("IFNOTACTORS- "+rActors);;
+    matchedPreds.clear();
+    if (rActors != null) {
+    	///////////////
+    	// this is about binding an Actor which is false
+    	// or about not finding the Actor at all
+    	len = rActors.size(); len2 = eActors.size();
+    	tru = false;
+    	for (int i=0; i<len; i++) {
+    		// for each ruleactor
+    		rulePred = rActors.get(i).predicate;
+    		for (int j=0; j<len2; j++) {
+    			epPred = eActors.get(j).predicate;
+    			tru = inferenceEngine.checkIsAConcept(epPred, rulePred);
+	           	environment.logDebug("CheckISA-2 "+tru+" "+epPred + " "+ rulePred);
+	           	//Technically, this is a hit, but ONLY if the eActor is false
+	           	nottru = eActors.get(j).truth;
+	           	if (nottru) {
+	           		matchedPreds.add(new Integer(j));
+	           		tru = false;
+	           	}
+    		}
+    		if (tru) {
+    			// we got a hit, this rule has failed
+    			return false;
+    		}
+    		
+    	}
+    }
+    
     // false seems to mean we found nothing in terms of actors to bind against
     if (!tru) return false; // move along
     // might want to check for null values
     // So, now we bind the rule and episode actors
     // That's a start into knowing if this rule can fire at all
     // Now, we go ahead and bind the actor variables to those of the rule
-    if (bindings.bind(rActors, eActors)) {
-    	
+    environment.logDebug("Starting RelnsStates ");;
+
+    //TODO
+    //if (bindings.bind(rActors, eActors)) { // we are done with actors
+    /////////////////////////
+    // Now that we have some bound variables
+    // try to apply them to relations and states
+    /////////////////////////
       System.out.println("TR 4:");
       List<Sentence> eVals = e.getRelations();
       List<Sentence> rVals = null;
       if (eVals != null) {
         // relations are a bit more tricky than actors.
         // an Episode can have relations that Rules don't care about
-        // but if a Rule cares and the Episode doesn't have any, this binding is hosed
+        // but if a ProcessRule cares and the Episode doesn't have any, this binding is hosed
     	// EXCEPT in the case of an IF-NOT-RELATIONS rule
         eVals = cloneSentence(eVals);
         //IF-NOT
         rVals = r.getIfNotRelations();
         //match variables on NOT relations
         if (rVals != null)
-          result = !bindings.match(rVals,eVals);
+          result = !bindings.match(rVals,eVals, false);
         environment.logDebug("IFNOTRelations "+result);
         if (!result) return false;
         //IF
         rVals = r.getIfRelations();
         //match variables on relations
         if (rVals != null)
-          result = bindings.match(rVals,eVals);
+          result = bindings.match(rVals,eVals, true);
       }
       System.out.println("TR 5: "+result);
       if (result) {
@@ -333,7 +377,7 @@ public class FillinNextEpisodeAgent extends Thread implements IAgent {
           //match variables on NOT states
           System.out.println("NOT STATES "+rVals);
           if (rVals != null)
-            result = !bindings.match(rVals,eVals);
+            result = !bindings.match(rVals,eVals, false);
           environment.logDebug("IFNOTStates "+result);
 
           if (!result) return false;
@@ -342,10 +386,10 @@ public class FillinNextEpisodeAgent extends Thread implements IAgent {
           System.out.println("TR 7: "+rVals);
           //match variables on states
           if (rVals != null)
-            result = bindings.match(rVals,eVals);
+            result = bindings.match(rVals,eVals, true);
         }
       }
-    }
+    //}
     //System.out.println("TR 8: "+result);
     environment.say("FillinNextEpisode tested rule "+r.getId()+" on episode "+e.getId()+" : "+result);
     return result;
@@ -354,12 +398,12 @@ public class FillinNextEpisodeAgent extends Thread implements IAgent {
   /**
    * 1- Build an Episode
    * 2- Manipulate the slots in the new Episode according to
-   *    changes made by the Rule's consequent clauses
+   *    changes made by the ProcessRule's consequent clauses
    * @param parentEpisode
    * @param rule that fired
    * @return newEpisode
    */
-  Episode fireRule(Episode parent, Rule r) {
+  Episode fireRule(Episode parent, ProcessRule r) {
     environment.say("FillinNextEpisode firing rule "+r.getId()+" on episode "+parent.getId());
     Episode result = environment.newEpisode(parent.getModel());
     result.setMechanism(r.getId());
@@ -475,15 +519,15 @@ public class FillinNextEpisodeAgent extends Thread implements IAgent {
    * @param e
    * @return
    */
-  List<Rule> collectRules(Episode e) {
-    List<Rule> result = new ArrayList<Rule>();
+  List<ProcessRule> collectRules(Episode e) {
+    List<ProcessRule> result = new ArrayList<ProcessRule>();
     System.out.println("CollectRules 1");
     environment.say("FillinNextEpisode getting actor preds on\n"+e.toXML());
 
     Set<String> preds = getPredicates(e);
     System.out.println("CollectRules 2");
     environment.say("FillinNextEpisode got "+preds.size()+" predicates\n"+preds);
-    List<Rule> rules = environment.getAllRules();
+    List<ProcessRule> rules = environment.getAllRules();
     System.out.println("CollectRules 3");
     environment.say("FillinNextEpisode got "+rules.size()+" rules.");
     result = filterRules(rules, preds);
@@ -498,18 +542,18 @@ public class FillinNextEpisodeAgent extends Thread implements IAgent {
   //		SO, we have to compare predicates by way of isA
   ////////////////////////////////////
   /**
-   * Return just those <code>Rule</code>s which contain,
+   * Return just those <code>ProcessRule</code>s which contain,
    * <em>at least</em> the given <code>predicates</code>
    * @param allRules
    * @param predicates
    * @return
    */
-  List<Rule> filterRules(List<Rule> allRules, Set<String> predicates) {
+  List<ProcessRule> filterRules(List<ProcessRule> allRules, Set<String> predicates) {
     System.out.println("FilterRules "+allRules.size()+" "+predicates.size());
-    List<Rule> result = new ArrayList<Rule>();
+    List<ProcessRule> result = new ArrayList<ProcessRule>();
     Set<String> rulePreds;
     int len = allRules.size();
-    Rule rul;
+    ProcessRule rul;
     Iterator<String>itr = null;
     environment.say("FillinNextEpisode filtering on predicates: "+predicates);
     boolean testTruth = true;

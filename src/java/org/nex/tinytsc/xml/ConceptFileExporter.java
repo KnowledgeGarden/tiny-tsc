@@ -72,7 +72,7 @@ public class ConceptFileExporter {
             startXML();
             Iterator itr = rules.iterator();
             while (itr.hasNext())
-              out.print(((Rule)itr.next()).toXML());
+              out.print(((ProcessRule)itr.next()).toXML());
             finishXML();
           }
         }
@@ -88,10 +88,10 @@ public class ConceptFileExporter {
           if (rules != null && rules.size() > 0) {
             Iterator itr = rules.iterator();
             while (itr.hasNext())
-              out.print(((Rule)itr.next()).toXML());
+              out.print(((ProcessRule)itr.next()).toXML());
           }
         }
-        public void export(Rule rule) {
+        public void export(ProcessRule rule) {
           //TODO
         }
 

@@ -23,8 +23,8 @@ import java.io.*;
  * TODO add ifRun ifNotRun thenRun
  */
 
-public class Rule implements Serializable, IActorCarrier, Identifiable {
-  private final int type = IConstants.RULE;
+public class ProcessRule implements Serializable, IActorCarrier, Identifiable {
+  private final int type = IConstants.PROCESS_RULE;
   private String id="";
   private String instanceOf = "";
   private List<String> subOf = null;
@@ -47,9 +47,9 @@ public class Rule implements Serializable, IActorCarrier, Identifiable {
   private List<String> thenSay = null; //takes String
   boolean isTerminate = false;
 
-  public Rule() {}
+  public ProcessRule() {}
 
-  public Rule(String _id) {
+  public ProcessRule(String _id) {
     this.id = _id;
   }
 
@@ -126,7 +126,7 @@ public class Rule implements Serializable, IActorCarrier, Identifiable {
   }
 
   /**
-   * Return all the actors in this <code>Rule</code>
+   * Return all the actors in this <code>ProcessRule</code>
    * @return
    */
   public List<Sentence> getActors() {

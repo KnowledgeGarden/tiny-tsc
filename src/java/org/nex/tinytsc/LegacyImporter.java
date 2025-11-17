@@ -13,7 +13,7 @@ import org.nex.tinytsc.engine.Episode;
 import org.nex.persist.text.TextFileHandler;
 import org.nex.tinytsc.engine.Sentence;
 import org.nex.tinytsc.engine.Model;
-import org.nex.tinytsc.engine.Rule;
+import org.nex.tinytsc.engine.ProcessRule;
 import org.nex.tinytsc.api.IConstants;
 import org.nex.tinytsc.engine.Concept;
 import org.nex.tinytsc.engine.Task;
@@ -50,7 +50,7 @@ public class LegacyImporter {
   private Map<String, Task> MyTasks = new HashMap<String, Task>();
  // private Map<String, Episode> MyEpisodes = new HashMap<String, Episode>();
   private Map<String, Model> MyModels = new HashMap<String, Model>();
-  private Map<String, Rule> MyRules = new HashMap<String, Rule>();
+  private Map<String, ProcessRule> MyRules = new HashMap<String, ProcessRule>();
 
   private File loader;
   private String directory;
@@ -136,7 +136,7 @@ public class LegacyImporter {
         environment.getDatabase().putModel(n, mx);
     }
     itr = MyRules.keySet().iterator();
-    Rule rx;
+    ProcessRule rx;
     while (itr.hasNext()) {
     	n = itr.next();
     	rx = this.MyRules.get(n);
@@ -300,7 +300,7 @@ public class LegacyImporter {
   }
   void convertRule(Con c) {
 	  System.out.println("CR "+c);
-    Rule r = new Rule(c.id);
+    ProcessRule r = new ProcessRule(c.id);
     if (!c.instanceOf.equals("")) {
       r.setInstanceOf(c.instanceOf);
     }

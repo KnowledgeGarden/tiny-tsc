@@ -38,7 +38,7 @@ public class SimpleBindingEngine {
   /**
    * Clear out the bindings
    * Bindings are cleared at the beginning of <code>testRule</code>
-   * where a <code>Rule</code> is being tested to see if it can fire
+   * where a <code>ProcessRule</code> is being tested to see if it can fire
    * against an <code>Episode</code>
    */
   public void freshBindings() {
@@ -60,7 +60,7 @@ public class SimpleBindingEngine {
   }
 
   /**
-   * @param unbound sentence from a Rule
+   * @param unbound sentence from a ProcessRule
    * @return bound sentence or null
    */
   public Sentence bindSentence(Sentence aSent) {
@@ -77,14 +77,14 @@ public class SimpleBindingEngine {
 
   /**
    * <p>Presently requires that both lists be the same length.
-   * This could be changed such that the <code>Rule</code> could have
+   * This could be changed such that the <code>ProcessRule</code> could have
    * <em>less</em> or the <em>same</em> length, but <b>not</b> <em>greater</em>
    * length.</p>
    * <p>It might be worth reversing this code:
-   * for each <code>Sentence</code> in the <code>Rule</code> <code>actors</code></p>
+   * for each <code>Sentence</code> in the <code>ProcessRule</code> <code>actors</code></p>
    *
    * <p>This operation is performed on <code>actors</code> for a
-   * <code>Rule</code> and an <code>Episode</code></p>
+   * <code>ProcessRule</code> and an <code>Episode</code></p>
    *
    * @param ruleSentences (list of <code>Sentence</code>s)
    * @param epSentences
@@ -109,7 +109,7 @@ public class SimpleBindingEngine {
       for (int i = 0; i < len; i++) {
         // for each Sentence in the Episode actors
         // remember, there may be more than one
-        // Sentence in both the Rule and in the Episode
+        // Sentence in both the ProcessRule and in the Episode
         // for any given predicate -- multiple actors of the same class
         t = epSentences.get(i);
         //
@@ -168,10 +168,11 @@ public class SimpleBindingEngine {
    * Return <code>true if we can bind up each variable in the rules
    * and match an episode sentence
    * @param ruleSentences
-   * @param epSentences
+ * @param epSentences
+ * @param polarity {@code false} for IfNot rule clauses
    * @return
    */
-  public boolean match(List<Sentence> ruleSentences, List<Sentence> epSentences) {
+  public boolean match(List<Sentence> ruleSentences, List<Sentence> epSentences, boolean polarity) {
 //    Matching rules: [[abuts(*f2 | *b1)]]
     environment.logDebug("Matching rules: " + ruleSentences);
 //    Matching eps: [[abuts(foo1 | foo2)], [abuts(foo2 | bar1)]]
@@ -194,15 +195,15 @@ public class SimpleBindingEngine {
     // which calls for isA tests: is this abstract rule predicate in the transitive closure of this
     // episode's predicate?
     ///////////////////////
+    boolean sentenceTruth = false;
     for (int i = 0; i < len; i++) {
       // for each Sentence in the rule list
       // remember, there may be more than one
-      // Sentence in both the Rule and in the Episode
+      // Sentence in both the ProcessRule and in the Episode
       // for any given predicate -- multiple actors of the same class
       t = ruleSentences.get(i);
       svar = t.subject; // variable
       ovar = t.object;  // variable
-      boolean sentenceTruth = false; // default
       xsbnd = curBinding.getBinding(svar);
       xstruth = curBinding.getTruth(svar);
       // Do we have this variable bound already?
@@ -227,21 +228,46 @@ public class SimpleBindingEngine {
         sentenceTruth = t2.truth;
         System.out.println("Match 2: "+t2.toString());
         sbnd = t2.subject;
-        obnd = t2.object;
+        obnd = t2.object; //Some sentences may not have an object defaults to ""
         if (sbnd.equals(xsbnd)) {
           if (!ovar.equals("")) {
             if (obnd.equals(xobnd)) {
-              temp = true;
+            	// we have a binding
+            	// we must now pay attention to polarity
+            	// if polarity is negative, we must return false
+              temp = polarity; //true;
               break;
             }
           } else {
+        	  // TODO here because both are "" ???
             temp = true;
             break;
           }
+        } else {
+        	// possible when sentence doesn't have an object, only a subject
         }
       }
       System.out.println("Match 3: "+temp);
-      if (!temp) return false; // never found a match for that sentence
+      ///////////////////
+      // We are in the middle of an outer loop - For Each ProcessRule Sentence
+      // and just finished the inner loop For each Episode Sentence
+      // There is a logic table:
+      //  If we got here and all ep sentences passed, now we care about
+      //	a: the polarity
+      //	b: the epSentence Truth
+      //  If polarity is false, AND epSentenceTruth is False, then we can pass
+      //  if polarity is positive AND epSentenceTruth is positive, we can pass
+      //  Otherwise, we're toast: this rule doesn't get to fire
+      ///////////////////
+      if ((!temp && polarity && sentenceTruth) || //nothing found & true & true
+    	  (temp && !polarity && sentenceTruth) || // something found && false & true
+    	  (temp && polarity && !sentenceTruth)		// something found & true & false
+    	 ) 
+      {
+    	  // we did not find a match for that sentence
+    	  return false; // never found a match for that sentence
+    	  // but if polarity is false, we can keep going
+      }
     }
     return true;
   }

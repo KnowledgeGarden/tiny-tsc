@@ -41,7 +41,7 @@ public class Episode implements Serializable, IActorCarrier, Identifiable {
    * Value = episodeId
    */
   private Map<String, String> previousEpisodes = new HashMap<String, String>();
-  /** <code>Rule</code> id that fired */
+  /** <code>ProcessRule</code> id that fired */
   private String mechanism= ""; //TODO to be removed - it was the ruleId
 
   public Episode() {}
@@ -124,7 +124,7 @@ public class Episode implements Serializable, IActorCarrier, Identifiable {
   }
   
   /**
-   * <p>We ask if a {@code Rule} has already fired on this episode,
+   * <p>We ask if a {@code ProcessRule} has already fired on this episode,
    * in which case, we do not want it to fire again. Return {@code false}
    * if there is no record of it firing already.</p>
    * <p>We look only at {@code nextEpisodes} because those are created
@@ -189,7 +189,7 @@ public class Episode implements Serializable, IActorCarrier, Identifiable {
   }
 
   /**
-   * There is just <em>one</em> nextEpisode per individual <code>Rule</code>
+   * There is just <em>one</em> nextEpisode per individual <code>ProcessRule</code>
    * firing.
    * @return
    */

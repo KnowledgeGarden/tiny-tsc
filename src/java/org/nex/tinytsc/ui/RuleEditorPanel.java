@@ -15,7 +15,7 @@ import javax.swing.border.*;
 import org.nex.tinytsc.api.IConstants;
 import org.nex.tinytsc.api.ISentenceListener;
 import org.nex.tinytsc.engine.Concept;
-import org.nex.tinytsc.engine.Rule;
+import org.nex.tinytsc.engine.ProcessRule;
 import org.nex.tinytsc.engine.Environment;
 import org.nex.tinytsc.engine.Sentence;
 
@@ -32,7 +32,7 @@ public class RuleEditorPanel extends JPanel implements ISentenceListener {
 	RuleEditorDialog host;
   Environment environment;
   SentenceEditorDialog sentenceEditor;
-  Rule myRule = null;
+  ProcessRule myRule = null;
   boolean isDirty = false;
   GridLayout gridLayout1 = new GridLayout();
   JPanel ifPanel = new JPanel();
@@ -254,7 +254,7 @@ public class RuleEditorPanel extends JPanel implements ISentenceListener {
   public void setRuleId(String id) {
     myRule = environment.getRule(id);
     if (myRule == null)
-    	throw new RuntimeException("Cannot find Rule: "+id);
+    	throw new RuntimeException("Cannot find ProcessRule: "+id);
     host.setRuleId(id);
     isDirty = false;
     //fillin display
@@ -338,9 +338,9 @@ public class RuleEditorPanel extends JPanel implements ISentenceListener {
 
   }
   public void newInstance(String parentId) {
-  	System.out.println("Rule Editor Panel New Rule "+parentId);
+  	System.out.println("ProcessRule Editor Panel New ProcessRule "+parentId);
   	clearDisplay();
-  	myRule = new Rule();
+  	myRule = new ProcessRule();
   	isDirty = true;
   	myRule.setInstanceOf(parentId);
   }
@@ -369,7 +369,7 @@ public class RuleEditorPanel extends JPanel implements ISentenceListener {
     else if (sentence.type == IConstants.THEN_SAY)
         myRule.removeThenSay(sentence.object);
   	else {
-  		System.out.println("Can't remove Rule sentence "+sentence.toString());
+  		System.out.println("Can't remove ProcessRule sentence "+sentence.toString());
   		return;
   	}
   	isDirty = true;
@@ -397,13 +397,13 @@ public class RuleEditorPanel extends JPanel implements ISentenceListener {
   }
 
   public void newSentence(int type) {
-  	System.out.println("Rule New Sentence "+type);
+  	System.out.println("ProcessRule New Sentence "+type);
     sentenceEditor.newSentence(type);
   }
 
 
   public void acceptSentence(boolean isDirty, Sentence sentence) {
-  	System.out.println("Rule Accept Sentence "+isDirty+" "+sentence.type+" "+sentence);
+  	System.out.println("ProcessRule Accept Sentence "+isDirty+" "+sentence.type+" "+sentence);
     if (isDirty) {
     	switch(sentence.type) {
     		case IConstants.IF_ACTORS:
@@ -471,9 +471,9 @@ public class RuleEditorPanel extends JPanel implements ISentenceListener {
   	//TODO add ifRun, ifNotRun, thenRun
   	myRule.setIsTerminate(terminateCheckBox.isSelected());
   }
-  public Rule getRule() {
+  public ProcessRule getRule() {
   	populateRule();
-  	System.out.println("Rule Editor Panel getRule "+myRule);
+  	System.out.println("ProcessRule Editor Panel getRule "+myRule);
   	return myRule;
   }
 

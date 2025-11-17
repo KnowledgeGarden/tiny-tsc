@@ -26,7 +26,7 @@ public class Concept implements Serializable, Identifiable {
   private String id="";
   private String name="";
   private String comment="";
-  private List<Rule> rules = null;
+  private List<ProcessRule> rules = null;
   private List<Episode> episodes=null;
   private String instanceOf = "";
   private List<String> subOf = null;
@@ -202,13 +202,13 @@ public class Concept implements Serializable, Identifiable {
     }
   }
 
-  public void addRule(Rule rule) {
-    if (rules==null) rules = new ArrayList<Rule>();
+  public void addRule(ProcessRule rule) {
+    if (rules==null) rules = new ArrayList<ProcessRule>();
     if (!rules.contains(rule))
     	rules.add(rule);
   }
 
-  public List<Rule> getRules() {
+  public List<ProcessRule> getRules() {
     return rules;
   }
 

@@ -122,7 +122,7 @@ public class Environment {
     database.putConcept(c.getId(),c);
   }
 
-  public void importRule(Rule c) throws DatastoreException {
+  public void importRule(ProcessRule c) throws DatastoreException {
     database.putRule(c.getId(),c);
   }
 
@@ -340,12 +340,12 @@ public class Environment {
   }
 
   /**
-   * Returns every {@link Rule} in the database
+   * Returns every {@link ProcessRule} in the database
    * @return List
    */
-  public List<Rule> getAllRules() {
+  public List<ProcessRule> getAllRules() {
     synchronized(database) {
-      List<Rule> result = new ArrayList();
+      List<ProcessRule> result = new ArrayList();
       try {
         database.startRulesIterator();
         Tuple t = new Tuple();
@@ -363,7 +363,7 @@ public class Environment {
         Sentence t = new Sentence();
         database.startRulesIterator();
         while(database.getNextObject(t))
-          result.add((Rule) t.getValue());
+          result.add((ProcessRule) t.getValue());
         return result;
       }
     } catch (DatastoreException e) {
@@ -436,7 +436,7 @@ public class Environment {
   }
 
 
-  public Rule getRule(String id) {
+  public ProcessRule getRule(String id) {
     synchronized(database) {
       try {
         return database.getRule(id);
@@ -495,8 +495,8 @@ public class Environment {
         case IConstants.CONCEPT:
           result = (Concept)identifiableObject;
           break;
-        case IConstants.RULE:
-          result = (Rule)identifiableObject;
+        case IConstants.PROCESS_RULE:
+          result = (ProcessRule)identifiableObject;
           break;
         case IConstants.EPISODE:
           result = (Episode)identifiableObject;
@@ -522,7 +522,7 @@ public class Environment {
     }
   }
 
-  public void putRule(Rule c) throws DatastoreException {
+  public void putRule(ProcessRule c) throws DatastoreException {
     synchronized(database) {
       try {
         database.putRule(c.getId(), c);
@@ -575,7 +575,7 @@ public class Environment {
           if ((identifiableObject = database.getConcept(objectId)) != null)
             result = IConstants.CONCEPT;
           else if ((identifiableObject = database.getRule(objectId)) != null)
-            result = IConstants.RULE;
+            result = IConstants.PROCESS_RULE;
           else if ((identifiableObject = database.getEpisode(objectId)) != null)
             result = IConstants.EPISODE;
           else if ((identifiableObject = database.getModel(objectId)) != null)

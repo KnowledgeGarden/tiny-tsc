@@ -42,11 +42,17 @@ public interface IConstants {
    * Tree node types
    */
   public static final int CONCEPT = 0;
-  public static final int RULE = 1;
-  public static final int EPISODE = 2;
-  public static final int MODEL = 3;
-  public static final int TASK = 4;
-  public static final int UNUSED = 5;
+  /**
+   * There will be two kinds of rules:
+   * 	ProcessRule
+   * 	Heuristic
+   */
+  public static final int PROCESS_RULE = 1;
+  public static final int HEURISTIC_RULE = 2;
+  public static final int EPISODE = 3;
+  public static final int MODEL = 4;
+  public static final int TASK = 5;
+  public static final int UNUSED = 6;
   
   /**
    * Known slot types
@@ -74,7 +80,7 @@ public interface IConstants {
   	_THEN_CREATE		= "thenCreate",
   	_THEN_CONJECTURE	= "thenConjectures",
   	_THEN_SAY			= "thenSay",
-  	//TODO the following are not in Rule yet
+  	//TODO the following are not in ProcessRule yet
   	_IF_RUN				= "ifRun",
   	_IF_NOT_RUN			= "ifNotRun",
   	_THEN_RUN			= "thenRun",
