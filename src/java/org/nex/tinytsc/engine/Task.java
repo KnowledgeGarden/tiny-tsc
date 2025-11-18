@@ -6,6 +6,7 @@
  */
 package org.nex.tinytsc.engine;
 import java.io.*;
+import java.util.*;
 
 import org.nex.tinytsc.api.IConstants;
 import org.nex.tinytsc.api.Identifiable;
@@ -23,6 +24,7 @@ public class Task implements Serializable, Identifiable, Comparable {
   public static final String UNKNOWN = "UNK";
   private String id="";
   private String instanceOf="";
+  private List<Task> myAgenda;
   /**
    * taskTypes will be, e.g.
    * <li>FILLIN_NEXT_EPISODE</li>
@@ -46,10 +48,12 @@ public class Task implements Serializable, Identifiable, Comparable {
   }
   public Task(String _id) {
     id = _id;
+    myAgenda = new ArrayList<Task>();
   }
   public Task(String type, int p) {
     this.taskType = type;
     this.priority = p;
+    myAgenda = new ArrayList<Task>();
   }
 
   public int getNodeType() {
@@ -61,6 +65,14 @@ public class Task implements Serializable, Identifiable, Comparable {
   }
   public String getId() {
     return this.id;
+  }
+  
+  public void setAgenda(List<Task>a) {
+	  myAgenda = a;
+  }
+  
+  public List<Task> getMyAgenda() {
+	  return myAgenda;
   }
   public void setInstanceOf(String io) {
     instanceOf = io;
@@ -79,6 +91,10 @@ public class Task implements Serializable, Identifiable, Comparable {
   }
   public void setPriority(int p) {
     priority = p;
+  }
+  
+  public void updatePriority(int delta) {
+	  priority += delta;
   }
 
   public void setModel(Model m) {
