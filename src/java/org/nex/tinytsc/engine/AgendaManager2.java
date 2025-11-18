@@ -13,15 +13,22 @@ import org.nex.tinytsc.api.Identifiable;
 public class AgendaManager2 {
 	private Logger log = Logger.getLogger(AgendaManager.class);
 	/**
-	 * A DynamicAgenda is a SortedSet<Task>
+	 * A DynamicAgenda is a List<Task>
+	 * Key: taskType
+	 * Value: Map<String , List<Task>>
+	 * 	Key:objectType
+	 *  Value List<Task> which is sorted on priority
 	 */
-	private Map<String, Map<String, SortedSet>> _agendas;
+	private Map<String, Map<String, List<Task>>> _agendas;
 	/**
 	 * Key = ClassId
-	 * Value = Task which contains that ClassId
+	 * Value = List
+	 * 	First value is the Object to be updated, following are Agendas (List<Task> which contain that object
+	 * 		Update the object
+	 * 		Then, sort those lists
 	 * We use this to simplify updating by ClassId
 	 */
-	private Map<String, Task> _classes;
+	private Map<String, List<Object>> _classes;
 	/**
 	 * Identifiable could be extensible: it generalizes the agenda to
 	 * handle all kinds of objects
@@ -42,8 +49,8 @@ public class AgendaManager2 {
 	 * 
 	 */
 	public AgendaManager2() {
-		_agendas = new HashMap<String, Map<String,SortedSet>>();
-		_classes = new HashMap<String, Task>();
+		_agendas = new HashMap<String, Map<String, List<Task>>>();
+		_classes = new HashMap<String, List<Object>>();
 	}
 
 	//////////////////////
@@ -61,60 +68,70 @@ public class AgendaManager2 {
 		Task t = new Task(taskType, priority);
 		t.setObject(c);
 		synchronized(_agendas) {
-			SortedSet s = findOrCreateAgenda(taskType);
+			List s = findOrCreateAgenda(taskType, identifiableType);
 			s.add(t);
+			Collections.sort(s);
 		}
 	}
 	
 
 	
 	/**
-	 * Return highest priority {@link Task} of a given {@code taskType}
+	 * <p>Return highest priority {@link Task} of a given {@code taskType}</cr>
+	 * 	This is distructive - it removes the object</p>
 	 * @param taskType
 	 * @param identifiableType
 	 * @return can return {@code null
 	 */
-	public Task getTask(String taskType, int identifiableType) {
+	public Task takeTask(String taskType, int identifiableType) {
 		Task result = null;
 		synchronized(_agendas) {
-			Map<String,SortedSet> foo = _agendas.get(taskType);  // note: might return null
+			Map<String,List<Task>> foo = _agendas.get(taskType);  // note: might return null
 			if (foo != null) {
-				SortedSet s = foo.get(Integer.toString(identifiableType));
-				result = (Task)s.last();
+				List<Task> s = foo.get(Integer.toString(identifiableType));
+				result = (Task)s.remove(0);
 			}
 		}
 		return result;
 	}
-	
+
+	/**
+	 * Does not remove task from Agenda
+	 * @param taskType
+	 * @param identifiableType
+	 * @return
+	 */
+	public Task getTask(String taskType, int identifiableType) {
+		Task result = null;
+		synchronized(_agendas) {
+			Map<String,List<Task>> foo = _agendas.get(taskType);  // note: might return null
+			if (foo != null) {
+				List<Task> s = foo.get(Integer.toString(identifiableType));
+				result = (Task)s.get(0);
+			}
+		}
+		return result;
+	}
+
+	public void updatePriority(String objectId, int increment) {
+		
+	}
 	//////////////////////
 	// Support
 	//////////////////////
 	
-	private SortedSet findOrCreateAgenda(String taskType, int identifiableType) {
-		SortedSet result = null;
-		Map<String,SortedSet> foo = _agendas.get(taskType);
-		if (result == null) {
-			result = new TreeSet(new MyComparator<T>());
-			foo = new HashMap<String, SortedSet>();
+	private List<Task> findOrCreateAgenda(String taskType, int identifiableType) {
+		List<Task> result = null;
+		Map<String, List<Task>> foo = _agendas.get(taskType);
+		if (foo == null) {
+			result = new ArrayList<Task>();
+			foo = new HashMap<String, List<Task>>();
+			Map<String, List<Task>> bar = new HashMap<String, List<Task>>();
 			foo.put(Integer.toString(identifiableType), result);
 			_agendas.put(taskType, foo);
 		}
 		return result;	
 	}
-	
-	private class MyComparator<T> implements Comparator<T> {
-		@Override
-		public int compare(T source, T target) {
-			Task _a = (Task)source;
-			Task _b = (Task)target;
-			String _typeA = _a.getTaskType();
-			String _typeB = _b.getTaskType();
-			if (!_typeA.equals(_typeB))
-					return -1;
-			return 0;
-		}
 		
-	}
-	
 	
 }

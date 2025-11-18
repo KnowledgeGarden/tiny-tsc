@@ -18,7 +18,7 @@ import org.nex.tinytsc.api.Identifiable;
  * @version 1.0
  */
 
-public class Task implements Serializable, Identifiable {
+public class Task implements Serializable, Identifiable, Comparable {
   private final int type = IConstants.TASK;
   public static final String UNKNOWN = "UNK";
   private String id="";
@@ -111,4 +111,11 @@ public class Task implements Serializable, Identifiable {
     buf.append("</task>\n");
     return buf.toString();
   }
+@Override
+public int compareTo(Object o) {
+	Task other = (Task)o;
+	Integer othP = Integer.valueOf(other.getPriority());
+	// In THEORY, this puts highest value First on the list
+	return othP.compareTo(Integer.valueOf(priority));
+}
 }
