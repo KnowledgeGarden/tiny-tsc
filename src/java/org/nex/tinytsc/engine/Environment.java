@@ -65,6 +65,8 @@ public class Environment {
   private Map episodes = new HashMap();
 
   private Model currentModel = null;
+  
+  private AgendaFactory agendaFactory = null;
 
   public Environment(Hashtable properties/*, MainFrame h*/) throws DatastoreException {
     //host = h;
@@ -79,6 +81,7 @@ public class Environment {
     }
     database = new JDBMDatabase(databaseDirectory, this);
     database.open();
+    agendaFactory = new AgendaFactory();
     taxManager = new LinkManager(this);
 //    agenda = new AgendaManager();
     fillinAgent.initialize(this);
@@ -106,6 +109,9 @@ public class Environment {
     
   }
 
+  public AgendaFactory getAgendaFactory() {
+	  return agendaFactory;
+  }
   public void setHost(MainFrame h) {
 	  this.host = h;
 	  say("Environment ready.");
