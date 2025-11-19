@@ -74,6 +74,7 @@ public class AgendaManager2 {
 		}
 	}
 	
+	
 
 	
 	/**
@@ -140,6 +141,23 @@ public class AgendaManager2 {
 	//////////////////////
 	// Support
 	//////////////////////
+	
+	/**
+	 * For debugging
+	 * @param name
+	 * @param type
+	 * @return can return {@code null}
+	 */
+	public List<Task> getTaskList(String name, int type) {
+		List<Task> result = null;
+		synchronized(_agendas) {
+			Map<String,List<Task>> foo = _agendas.get(name);
+			if (foo != null)
+				result = foo.get(Integer.toString(type));
+			
+		}
+		return result;
+	}
 	
 	private void addObjectToMaps(Identifiable c, Task t) {
 		String id = c.getId();
