@@ -66,7 +66,9 @@ public class AgendaManager2 {
 		Task t = new Task(taskType, priority);
 		t.setObject(c);
 		synchronized(_agendas) {
+			System.out.println("X "+_agendas);
 			List<Task> s = findOrCreateAgenda(taskType, identifiableType);
+			System.out.println("Y "+_agendas);
 			s.add(t);
 			t.setAgenda(s);
 			Collections.sort(s);
@@ -184,13 +186,18 @@ public class AgendaManager2 {
 	private List<Task> findOrCreateAgenda(String taskType, int identifiableType) {
 		List<Task> result = null;
 		Map<String, List<Task>> foo = _agendas.get(taskType);
+		System.out.println("A "+foo);
 		if (foo == null) {
 			result = new ArrayList<Task>();
+			System.out.println("B "+foo);
 			foo = new HashMap<String, List<Task>>();
 			Map<String, List<Task>> bar = new HashMap<String, List<Task>>();
 			foo.put(Integer.toString(identifiableType), result);
 			_agendas.put(taskType, foo);
+		} else {
+			result = foo.get(Integer.toString(identifiableType));
 		}
+		System.out.println("C "+result);
 		return result;	
 	}
 		
